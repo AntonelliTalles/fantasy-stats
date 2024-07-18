@@ -1,4 +1,3 @@
-// src/pages/Home.tsx
 import React from 'react';
 import { Flex, Box, Heading, Grid } from '@chakra-ui/react';
 import Carousel from '../components/Carousel';
@@ -19,7 +18,6 @@ const newsData = [
     summary: 'Resumo da notícia 2',
     link: '/news/2',
   },
-  // Adicione mais notícias conforme necessário
 ];
 
 const Home: React.FC = () => {

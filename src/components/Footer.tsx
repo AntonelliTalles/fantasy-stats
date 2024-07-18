@@ -1,4 +1,3 @@
-// src/components/Footer.tsx
 import React from 'react';
 import { Box, Text, Link, Stack, useColorModeValue, Container } from '@chakra-ui/react';
 

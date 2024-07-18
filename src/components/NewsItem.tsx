@@ -1,5 +1,3 @@
-// src/components/NewsItem.tsx
-
 import React from 'react';
 import { Box, Image, Link, Text } from '@chakra-ui/react';
 

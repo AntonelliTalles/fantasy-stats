@@ -1,5 +1,3 @@
-// src/pages/NewsList.tsx
-
 import React from 'react';
 import { Box, Heading } from '@chakra-ui/react';
 import NewsItem from '../components/NewsItem';
@@ -19,7 +17,6 @@ const newsData = [
     summary: 'Resumo da notícia 2',
     link: '/news/2',
   },
-  // Adicione mais notícias conforme necessário
 ];
 
 const NewsList: React.FC = () => {

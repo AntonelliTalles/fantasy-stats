@@ -1,5 +1,3 @@
-// src/pages/NewsDetail.tsx
-
 import React from 'react';
 import { Box, Heading, Image, Text } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
@@ -21,7 +19,6 @@ const newsData = [
     caption: 'Legenda da imagem da notícia 2',
     content: 'Texto completo da notícia 2',
   },
-  // Adicione mais notícias conforme necessário
 ];
 
 const NewsDetail: React.FC = () => {
