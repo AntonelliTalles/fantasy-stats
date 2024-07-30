@@ -1,36 +1,30 @@
 import React from 'react';
-import { Box, Heading } from '@chakra-ui/react';
-import NewsItem from '../components/NewsItem';
+import { Box, Image, Text, Link as ChakraLink, Spinner } from '@chakra-ui/react';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { fetchNews } from '../api/news';
+import { News } from 'types/news';
 
-const newsData = [
-  {
-    id: 1,
-    imageUrl: 'https://via.placeholder.com/64',
-    title: 'Notícia 1',
-    summary: 'Resumo da notícia 1',
-    link: '/news/1',
-  },
-  {
-    id: 2,
-    imageUrl: 'https://via.placeholder.com/64',
-    title: 'Notícia 2',
-    summary: 'Resumo da notícia 2',
-    link: '/news/2',
-  },
-];
+const NewsList = () => {
+  const { data, error, isLoading }: UseQueryResult<News[]> = useQuery({
+    queryKey: ['news'],
+    queryFn: fetchNews,
+  });
 
-const NewsList: React.FC = () => {
+  if (isLoading) return <Spinner />;
+  if (error) return <div>Error loading news</div>;
+
   return (
-    <Box p={4}>
-      <Heading as="h1" mb={6}>Notícias</Heading>
-      {newsData.map(news => (
-        <NewsItem
-          key={news.id}
-          imageUrl={news.imageUrl}
-          title={news.title}
-          summary={news.summary}
-          link={news.link}
-        />
+    <Box>
+      {data?.map((newsItem) => (
+        <Box key={newsItem.id} display="flex" mb={4}>
+          <Image src={newsItem.imageUrl} alt={newsItem.title} boxSize="64px" objectFit="cover" mr={4} />
+          <Box>
+            <ChakraLink href={`/news/${newsItem.id}`} fontSize="xl" fontWeight="bold">
+              {newsItem.title}
+            </ChakraLink>
+            <Text>{newsItem.summary}</Text>
+          </Box>
+        </Box>
       ))}
     </Box>
   );
