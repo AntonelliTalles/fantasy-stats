@@ -1,4 +1,3 @@
-// src/components/CustomAccordion.tsx
 import React from 'react';
 import {
   Accordion,

@@ -1,4 +1,3 @@
-// src/components/NavBar.tsx
 import React from 'react';
 import {
   Box,
