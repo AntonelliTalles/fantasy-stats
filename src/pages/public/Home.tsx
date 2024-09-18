@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flex, Box, Heading, Grid } from '@chakra-ui/react';
-import Carousel from '../components/Carousel';
-import NewsItem from '../components/NewsItem';
+import Carousel from '../../components/Carousel';
+import NewsItem from '../../components/NewsItem';
 
 const newsData = [
   {
