@@ -36,6 +36,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "dev": "vite",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -60,6 +61,7 @@
   },
   "devDependencies": {
     "@types/react-slick": "^0.23.13",
-    "@types/react-table": "^7.7.20"
+    "@types/react-table": "^7.7.20",
+    "vite": "^6.0.7"
   }
 }

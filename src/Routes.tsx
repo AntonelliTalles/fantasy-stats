@@ -2,10 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/public/Home';
 import PlayerProfilePage from './pages/player-profile';
-import NewsList from 'pages/NewsList';
-import NewsDetail from 'pages/NewsDetail';
-import AdminDashboard from 'pages/admin/AdminDashboard'; // Página administrativa
-import Login from 'pages/auth/Login'; // Página de login
+import NewsList from './pages/NewsList';
+import NewsDetail from './pages/NewsDetail';
+import AdminDashboard from './pages/admin/AdminDashboard'; // Página administrativa
+import Login from './pages/auth/Login'; // Página de login
 // import ProtectedRoute from './components/Auth/ProtectedRoute';
 
 const AppRoutes: React.FC = () => {

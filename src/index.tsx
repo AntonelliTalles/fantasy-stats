@@ -4,7 +4,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import theme from './theme';
-import { AuthProvider } from 'context/authContext';
+import { AuthProvider } from './context/authContext';
 
 const queryClient = new QueryClient();
 const rootElement = document.getElementById('root');
