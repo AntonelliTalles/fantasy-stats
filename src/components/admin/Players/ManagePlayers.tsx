@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Thead, Tbody, Tr, Th, Td, Button } from "@chakra-ui/react";
+import { Table, Thead, Tbody, Tr, Th, Td, Button, ButtonGroup } from "@chakra-ui/react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import EditPlayerModal from "./EditPlayerModal";
@@ -74,12 +74,14 @@ const ManagePlayers = () => {
               <Td>{player.leagueTypes.join(", ")}</Td>
               <Td>{player.titlesWon.join(", ")}</Td>
               <Td>
-                <Button colorScheme="blue" onClick={() => handleEdit(player)}>
-                  Editar
-                </Button>
-                <Button colorScheme="red" ml={2} onClick={() => handleDelete(player._id)}>
-                  Excluir
-                </Button>
+                <ButtonGroup spacing={4}>
+                  <Button colorScheme="blue" onClick={() => handleEdit(player)}>
+                    Editar
+                  </Button>
+                  <Button colorScheme="red" onClick={() => handleDelete(player._id)}>
+                    Excluir
+                  </Button>
+                </ButtonGroup>
               </Td>
             </Tr>
           ))}
