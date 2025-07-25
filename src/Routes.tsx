@@ -14,6 +14,8 @@ import ManageTitles from './components/admin/Statistics/ManageTitles';
 import AddRecords from './components/admin/Statistics/AddRecords';
 import ManageRecords from './components/admin/Statistics/ManageRecords';
 import Dashboard from './components/admin/Dashboard';
+import AddHeadToHead from './components/admin/HeadToHead/AddHeadToHead';
+import ManageHeadToHead from './components/admin/HeadToHead/ManageHeadToHead';
 // import Login from 'pages/auth/Login';
 
 const AppRoutes: React.FC = () => {
@@ -100,6 +102,22 @@ const AppRoutes: React.FC = () => {
           element={
             <AdminLayout>
               <ManageRecords />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/HeadToHead/add-h2h"
+          element={
+            <AdminLayout>
+              <AddHeadToHead />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/HeadToHead/manage-h2h"
+          element={
+            <AdminLayout>
+              <ManageHeadToHead />
             </AdminLayout>
           }
         />
