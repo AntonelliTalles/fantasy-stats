@@ -18,6 +18,7 @@ import AddHeadToHead from './components/admin/HeadToHead/AddHeadToHead';
 import ManageHeadToHead from './components/admin/HeadToHead/ManageHeadToHead';
 import PlayerHistoryForm from './components/admin/PlayerHistory/PlayerHistoryAdd';
 import ManagePlayerHistory from './components/admin/PlayerHistory/ManagePlayerHistory';
+import HomePage from './components/Home/HomePage';
 // import Login from 'pages/auth/Login';
 
 const AppRoutes: React.FC = () => {
@@ -25,7 +26,7 @@ const AppRoutes: React.FC = () => {
     <Router>
       <Routes>
         {/* Rotas públicas */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/profile" element={<PlayerProfilePage />} />
         <Route path="/news" element={<NewsList />} />
         <Route path="/news/:id" element={<NewsDetail />} />
