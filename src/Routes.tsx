@@ -16,6 +16,8 @@ import ManageRecords from './components/admin/Statistics/ManageRecords';
 import Dashboard from './components/admin/Dashboard';
 import AddHeadToHead from './components/admin/HeadToHead/AddHeadToHead';
 import ManageHeadToHead from './components/admin/HeadToHead/ManageHeadToHead';
+import PlayerHistoryForm from './components/admin/PlayerHistory/PlayerHistoryAdd';
+import ManagePlayerHistory from './components/admin/PlayerHistory/ManagePlayerHistory';
 // import Login from 'pages/auth/Login';
 
 const AppRoutes: React.FC = () => {
@@ -121,6 +123,20 @@ const AppRoutes: React.FC = () => {
             </AdminLayout>
           }
         />
+        <Route 
+         path="/admin/PlayerHistory/player-history" 
+         element={
+          <AdminLayout>
+            <PlayerHistoryForm />
+          </AdminLayout>
+         } />
+         <Route 
+         path="/admin/PlayerHistory/manage-player-history" 
+         element={
+          <AdminLayout>
+            <ManagePlayerHistory />
+          </AdminLayout>
+         } />
       </Routes>
     </Router>
   );
