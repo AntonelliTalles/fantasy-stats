@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/public/Home';
 import PlayerProfilePage from './pages/player-profile';
 import NewsList from './pages/NewsList';
 import NewsDetail from './pages/NewsDetail';
@@ -18,7 +17,8 @@ import AddHeadToHead from './components/admin/HeadToHead/AddHeadToHead';
 import ManageHeadToHead from './components/admin/HeadToHead/ManageHeadToHead';
 import PlayerHistoryForm from './components/admin/PlayerHistory/PlayerHistoryAdd';
 import ManagePlayerHistory from './components/admin/PlayerHistory/ManagePlayerHistory';
-import HomePage from './components/Home/HomePage';
+import LeaguePlayersPage from './components/PlayersList/LeaguePlayersPage';
+import HomePage from './components/Home/Homepage';
 // import Login from 'pages/auth/Login';
 
 const AppRoutes: React.FC = () => {
@@ -30,6 +30,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/profile" element={<PlayerProfilePage />} />
         <Route path="/news" element={<NewsList />} />
         <Route path="/news/:id" element={<NewsDetail />} />
+        <Route path="/players-list" element={<LeaguePlayersPage />} />
 
         {/* Rota de Login */}
         {/* <Route path="/login" element={<Login />} /> */}
