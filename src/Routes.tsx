@@ -19,6 +19,8 @@ import PlayerHistoryForm from './components/admin/PlayerHistory/PlayerHistoryAdd
 import ManagePlayerHistory from './components/admin/PlayerHistory/ManagePlayerHistory';
 import LeaguePlayersPage from './components/PlayersList/LeaguePlayersPage';
 import HomePage from './components/Home/Homepage';
+import LeaguesViewPage from './pages/Admin/LeaguesViewPage'
+import LeagueProfilePage from './pages/Admin/LeagueProfilePage';
 // import Login from 'pages/auth/Login';
 
 const AppRoutes: React.FC = () => {
@@ -31,6 +33,9 @@ const AppRoutes: React.FC = () => {
         <Route path="/news" element={<NewsList />} />
         <Route path="/news/:id" element={<NewsDetail />} />
         <Route path="/players-list" element={<LeaguePlayersPage />} />
+        <Route path="leagues/view" element={<LeaguesViewPage />} />
+        <Route path="view-league/:leagueId" element={<LeagueProfilePage />} />
+
 
         {/* Rota de Login */}
         {/* <Route path="/login" element={<Login />} /> */}
@@ -125,15 +130,15 @@ const AppRoutes: React.FC = () => {
             </AdminLayout>
           }
         />
-        <Route 
-         path="/admin/PlayerHistory/player-history" 
+        <Route
+         path="/admin/PlayerHistory/player-history"
          element={
           <AdminLayout>
             <PlayerHistoryForm />
           </AdminLayout>
          } />
-         <Route 
-         path="/admin/PlayerHistory/manage-player-history" 
+         <Route
+         path="/admin/PlayerHistory/manage-player-history"
          element={
           <AdminLayout>
             <ManagePlayerHistory />
