@@ -1,13 +1,13 @@
 import React from 'react';
 import { Box } from '@chakra-ui/react';
-import NavBar from './components/NavBar';
-import Footer from './components/Footer';
 import AppRoutes from './Routes'; 
+import Header from './components/Home/Header';
+import Footer from './components/Home/Footer';
 
 function App() {
   return (
       <Box>
-        <NavBar />
+        <Header />
         <Box minH="calc(100vh - 64px)">
           <AppRoutes />
         </Box>

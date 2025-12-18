@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/public/Home';
 import PlayerProfilePage from './pages/player-profile';
 import NewsList from './pages/NewsList';
 import NewsDetail from './pages/NewsDetail';
@@ -14,6 +13,14 @@ import ManageTitles from './components/admin/Statistics/ManageTitles';
 import AddRecords from './components/admin/Statistics/AddRecords';
 import ManageRecords from './components/admin/Statistics/ManageRecords';
 import Dashboard from './components/admin/Dashboard';
+import AddHeadToHead from './components/admin/HeadToHead/AddHeadToHead';
+import ManageHeadToHead from './components/admin/HeadToHead/ManageHeadToHead';
+import PlayerHistoryForm from './components/admin/PlayerHistory/PlayerHistoryAdd';
+import ManagePlayerHistory from './components/admin/PlayerHistory/ManagePlayerHistory';
+import LeaguePlayersPage from './components/PlayersList/LeaguePlayersPage';
+import HomePage from './components/Home/Homepage';
+import LeaguesViewPage from './pages/Admin/LeaguesViewPage'
+import LeagueProfilePage from './pages/Admin/LeagueProfilePage';
 // import Login from 'pages/auth/Login';
 
 const AppRoutes: React.FC = () => {
@@ -21,10 +28,14 @@ const AppRoutes: React.FC = () => {
     <Router>
       <Routes>
         {/* Rotas públicas */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/profile" element={<PlayerProfilePage />} />
         <Route path="/news" element={<NewsList />} />
         <Route path="/news/:id" element={<NewsDetail />} />
+        <Route path="/players-list" element={<LeaguePlayersPage />} />
+        <Route path="leagues/view" element={<LeaguesViewPage />} />
+        <Route path="view-league/:leagueId" element={<LeagueProfilePage />} />
+
 
         {/* Rota de Login */}
         {/* <Route path="/login" element={<Login />} /> */}
@@ -103,6 +114,36 @@ const AppRoutes: React.FC = () => {
             </AdminLayout>
           }
         />
+        <Route
+          path="/admin/HeadToHead/add-h2h"
+          element={
+            <AdminLayout>
+              <AddHeadToHead />
+            </AdminLayout>
+          }
+        />
+        <Route
+          path="/admin/HeadToHead/manage-h2h"
+          element={
+            <AdminLayout>
+              <ManageHeadToHead />
+            </AdminLayout>
+          }
+        />
+        <Route
+         path="/admin/PlayerHistory/player-history"
+         element={
+          <AdminLayout>
+            <PlayerHistoryForm />
+          </AdminLayout>
+         } />
+         <Route
+         path="/admin/PlayerHistory/manage-player-history"
+         element={
+          <AdminLayout>
+            <ManagePlayerHistory />
+          </AdminLayout>
+         } />
       </Routes>
     </Router>
   );

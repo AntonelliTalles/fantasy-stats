@@ -36,10 +36,10 @@ const Sidebar = () => {
         title="Estatísticas"
         icon={<FaChartBar />}
         subItems={[
-          { label: 'Cadastrar Títulos', link: '/admin/statistics/add-titles' },
-          { label: 'Gerenciar Títulos', link: '/admin/statistics/manage-titles' },
-          { label: 'Cadastrar Recordes', link: '/admin/statistics/add-records' },
-          { label: 'Gerenciar Recordes', link: '/admin/statistics/manage-records' },
+          { label: 'Cadastrar Confrontos Diretos', link: '/admin/HeadToHead/add-h2h' },
+          { label: 'Gerenciar Confrontos Diretos', link: '/admin/HeadToHead/manage-h2h' },
+          { label: 'Adicionar Histórico de temporada', link: '/admin/PlayerHistory/player-history' },
+          { label: 'Gerenciar Histórico de temporada', link: '/admin/PlayerHistory/manage-player-history' },
         ]}
       />
       <MenuItem title="Sair" icon={<FaSignOutAlt />} link="/login" />
