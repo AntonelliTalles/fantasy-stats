@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import PlayerProfilePage from './pages/player-profile';
 import NewsList from './pages/NewsList';
 import NewsDetail from './pages/NewsDetail';
 import AdminLayout from './components/admin/AdminLayout';
@@ -21,6 +20,7 @@ import LeaguePlayersPage from './components/PlayersList/LeaguePlayersPage';
 import HomePage from './components/Home/Homepage';
 import LeaguesViewPage from './pages/Admin/LeaguesViewPage'
 import LeagueProfilePage from './pages/Admin/LeagueProfilePage';
+import PlayerProfilePage from './pages/Admin/PlayerProfilePage'
 // import Login from 'pages/auth/Login';
 
 const AppRoutes: React.FC = () => {
@@ -29,12 +29,13 @@ const AppRoutes: React.FC = () => {
       <Routes>
         {/* Rotas públicas */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/profile" element={<PlayerProfilePage />} />
         <Route path="/news" element={<NewsList />} />
         <Route path="/news/:id" element={<NewsDetail />} />
         <Route path="/players-list" element={<LeaguePlayersPage />} />
-        <Route path="leagues/view" element={<LeaguesViewPage />} />
-        <Route path="view-league/:leagueId" element={<LeagueProfilePage />} />
+        <Route path="/leagues/view" element={<LeaguesViewPage />} />
+        <Route path="/view-league/:leagueId" element={<LeagueProfilePage />} />
+        <Route path="/profile/:playerId" element={<PlayerProfilePage />} />
+
 
 
         {/* Rota de Login */}
