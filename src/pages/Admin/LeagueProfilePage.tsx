@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import {
   Box,
   Heading,
@@ -12,7 +12,6 @@ import {
   Avatar,
 } from '@chakra-ui/react'
 import { useQuery } from '@tanstack/react-query'
-
 import { asyncGetLeagues } from '../../services/leagueService'
 import { League } from '../../types/league'
 import LeaguePodium from '../../components/league/LeaguePodium'
@@ -24,6 +23,8 @@ export default function LeagueProfilePage() {
   const cardBg = useColorModeValue('white', 'gray.800')
   const cardBorder = useColorModeValue('gray.200', 'gray.700')
   const playersItemBg = useColorModeValue('gray.50', 'gray.700')
+
+  const navigate = useNavigate()
 
   const {
     data: leagues,
@@ -179,9 +180,13 @@ export default function LeagueProfilePage() {
                   borderRadius="lg"
                   borderColor={cardBorder}
                   bg={playersItemBg}
-                  whileHover={{ scale: 1.03, boxShadow: 'md' }}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  cursor="pointer"
+                  whileHover={{ scale: 1.03 }}
+                  _hover={{
+                    boxShadow: 'md',
+                    bg: useColorModeValue('gray.100', 'gray.600'),
+                  }}
+                  onClick={() => navigate(`/profile/${player._id}`)}
                 >
                   <HStack>
                     <Avatar name={player.name} bg="blue.500" />
