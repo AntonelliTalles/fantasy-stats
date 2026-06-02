@@ -1,150 +1,263 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
+  Avatar,
+  Badge,
   Box,
+  Button,
+  Collapse,
   Flex,
   Heading,
+  HStack,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
-  Avatar,
+  Spinner,
   Text,
-  Badge,
-  Collapse,
-  IconButton,
+  VStack,
 } from "@chakra-ui/react";
-import { Search } from "lucide-react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Search } from "lucide-react";
+import api from "../../services/api";
 
-// Exemplo de tipo de jogador
 interface Player {
-  id: string;
+  _id: string;
   name: string;
-  age: number;
-  favoriteTeams: string[];
-  leagueTypes: string[];
-  titlesWon: string[];
+  favoriteTeams?: string[];
+  leagueTypes?: string[];
+  titlesWon?: string[];
 }
 
 const LeaguePlayersPage: React.FC = () => {
+  const navigate = useNavigate();
+
   const [players, setPlayers] = useState<Player[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock de dados (mais tarde será do backend)
   useEffect(() => {
-    const mockPlayers: Player[] = [
-      {
-        id: "1",
-        name: "Alice",
-        age: 25,
-        favoriteTeams: ["Team A", "Team B"],
-        leagueTypes: ["Fantasy NFL", "Fantasy NBA"],
-        titlesWon: ["Champion 2023", "MVP 2024"],
-      },
-      {
-        id: "2",
-        name: "Bob",
-        age: 28,
-        favoriteTeams: ["Team C"],
-        leagueTypes: ["Fantasy MLB"],
-        titlesWon: ["Runner-up 2023"],
-      },
-      {
-        id: "3",
-        name: "Charlie",
-        age: 22,
-        favoriteTeams: ["Team D", "Team A"],
-        leagueTypes: ["Fantasy NFL"],
-        titlesWon: [],
-      },
-    ];
-    setPlayers(mockPlayers);
+    const fetchPlayers = async () => {
+      try {
+        const response = await api.get("/players");
+        setPlayers(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar jogadores:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPlayers();
   }, []);
 
-  // Filtragem por nome
-  const filteredPlayers = players.filter((player) =>
-    player.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPlayers = useMemo(() => {
+    return players.filter((player) =>
+      player.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [players, searchTerm]);
+
+  const handleToggleExpand = (playerId: string) => {
+    setExpandedId((currentId) => (currentId === playerId ? null : playerId));
+  };
+
+  const handleNavigateToProfile = (playerId: string) => {
+    navigate(`/profile/${playerId}`);
+  };
+
+  if (isLoading) {
+    return (
+      <Flex minH="80vh" align="center" justify="center">
+        <Spinner size="xl" color="green.500" />
+      </Flex>
+    );
+  }
 
   return (
-    <Box p={8} bg="gray.50" minH="100vh">
-      <Heading mb={6}>Players List</Heading>
+    <Box px={{ base: 5, md: 10 }} py={10} bg="gray.50" minH="100vh">
+      <VStack align="stretch" spacing={6}>
+        <Box>
+          <Badge colorScheme="green" mb={3} px={3} py={1} borderRadius="full">
+            Players
+          </Badge>
 
-      {/* Campo de busca */}
-      <InputGroup mb={6} maxW="400px">
-        <InputLeftElement pointerEvents="none">
-          <Search color="gray.400" />
-        </InputLeftElement>
-        <Input
-          placeholder="Search by name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          bg="white"
-        />
-      </InputGroup>
+          <Heading size="xl">Jogadores da Liga</Heading>
 
-      {/* Lista de jogadores */}
-      <Flex direction="column" gap={4}>
-        {filteredPlayers.map((player) => (
-          <Box
-            key={player.id}
-            bg="white"
-            p={4}
-            borderRadius="md"
-            shadow="sm"
-            cursor="pointer"
+          <Text color="gray.600" mt={2}>
+            Explore os participantes cadastrados, seus times favoritos,
+            modalidades e títulos conquistados.
+          </Text>
+        </Box>
+
+        <Flex
+          justify="space-between"
+          align={{ base: "stretch", md: "center" }}
+          direction={{ base: "column", md: "row" }}
+          gap={4}
+        >
+          <InputGroup maxW={{ base: "100%", md: "420px" }}>
+            <InputLeftElement pointerEvents="none">
+              <Search size={18} color="gray" />
+            </InputLeftElement>
+
+            <Input
+              placeholder="Buscar jogador por nome..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              bg="white"
+            />
+          </InputGroup>
+
+          <Badge
+            alignSelf={{ base: "flex-start", md: "center" }}
+            colorScheme="blue"
+            fontSize="sm"
+            px={3}
+            py={1}
+            borderRadius="full"
           >
-            <Flex align="center" justify="space-between">
-              <Flex align="center" gap={4}>
-                {/* Avatar com letra inicial */}
-                <Avatar name={player.name} bg="blue.400" color="white" />
-                <Text fontWeight="bold">{player.name}</Text>
-              </Flex>
-              <IconButton
-                aria-label="Expand player"
-                icon={expandedId === player.id ? <ChevronUp /> : <ChevronDown />}
-                size="sm"
-                onClick={() =>
-                  setExpandedId(expandedId === player.id ? null : player.id)
-                }
-              />
-            </Flex>
+            {filteredPlayers.length} jogador(es) encontrado(s)
+          </Badge>
+        </Flex>
 
-            {/* Conteúdo expandido */}
-            <Collapse in={expandedId === player.id} animateOpacity>
-              <Box mt={4} pl={12}>
-                <Text>Age: {player.age}</Text>
-                <Text>
-                  Favorite Teams:{" "}
-                  {player.favoriteTeams.map((team) => (
-                    <Badge key={team} mr={2} colorScheme="green">
-                      {team}
-                    </Badge>
-                  ))}
-                </Text>
-                <Text>
-                  League Types:{" "}
-                  {player.leagueTypes.map((league) => (
-                    <Badge key={league} mr={2} colorScheme="purple">
-                      {league}
-                    </Badge>
-                  ))}
-                </Text>
-                <Text>
-                  Titles Won:{" "}
-                  {player.titlesWon.length > 0
-                    ? player.titlesWon.map((title) => (
-                        <Badge key={title} mr={2} colorScheme="yellow">
-                          {title}
-                        </Badge>
-                      ))
-                    : "None"}
-                </Text>
-              </Box>
-            </Collapse>
-          </Box>
-        ))}
-      </Flex>
+        <VStack spacing={4} align="stretch">
+          {filteredPlayers.length > 0 ? (
+            filteredPlayers.map((player) => {
+              const isExpanded = expandedId === player._id;
+
+              return (
+                <Box
+                  key={player._id}
+                  bg="white"
+                  p={5}
+                  borderRadius="2xl"
+                  shadow="md"
+                  transition="all 0.25s ease"
+                  _hover={{
+                    transform: "translateY(-3px)",
+                    shadow: "xl",
+                  }}
+                >
+                  <Flex align="center" justify="space-between" gap={4}>
+                    <HStack spacing={4}>
+                      <Avatar
+                        name={player.name}
+                        bg="green.500"
+                        color="white"
+                        size="md"
+                      />
+
+                      <Box>
+                        <Text fontWeight="bold" fontSize="lg">
+                          {player.name}
+                        </Text>
+
+                        <Text fontSize="sm" color="gray.500">
+                          {player.leagueTypes?.length ?? 0} modalidade(s) •{" "}
+                          {player.titlesWon?.length ?? 0} título(s)
+                        </Text>
+                      </Box>
+                    </HStack>
+
+                    <IconButton
+                      aria-label="Expandir jogador"
+                      icon={isExpanded ? <ChevronUp /> : <ChevronDown />}
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleToggleExpand(player._id)}
+                    />
+                  </Flex>
+
+                  <Collapse in={isExpanded} animateOpacity>
+                    <Box mt={5} pl={{ base: 0, md: 14 }}>
+                      <VStack align="stretch" spacing={4}>
+                        <Box>
+                          <Text fontWeight="bold" mb={2}>
+                            Times que torce
+                          </Text>
+
+                          {(player.favoriteTeams ?? []).length > 0 ? (
+                            <HStack spacing={2} flexWrap="wrap">
+                              {player.favoriteTeams?.map((team) => (
+                                <Badge key={team} colorScheme="green" mb={2}>
+                                  {team}
+                                </Badge>
+                              ))}
+                            </HStack>
+                          ) : (
+                            <Text color="gray.500" fontSize="sm">
+                              Nenhum time cadastrado.
+                            </Text>
+                          )}
+                        </Box>
+
+                        <Box>
+                          <Text fontWeight="bold" mb={2}>
+                            Modalidades de Fantasy
+                          </Text>
+
+                          {(player.leagueTypes ?? []).length > 0 ? (
+                            <HStack spacing={2} flexWrap="wrap">
+                              {player.leagueTypes?.map((league) => (
+                                <Badge key={league} colorScheme="purple" mb={2}>
+                                  {league}
+                                </Badge>
+                              ))}
+                            </HStack>
+                          ) : (
+                            <Text color="gray.500" fontSize="sm">
+                              Nenhuma modalidade cadastrada.
+                            </Text>
+                          )}
+                        </Box>
+
+                        <Box>
+                          <Text fontWeight="bold" mb={2}>
+                            Títulos conquistados
+                          </Text>
+
+                          {(player.titlesWon ?? []).length > 0 ? (
+                            <HStack spacing={2} flexWrap="wrap">
+                              {player.titlesWon?.map((title) => (
+                                <Badge key={title} colorScheme="yellow" mb={2}>
+                                  🏆 {title}
+                                </Badge>
+                              ))}
+                            </HStack>
+                          ) : (
+                            <Text color="gray.500" fontSize="sm">
+                              Nenhum título registrado.
+                            </Text>
+                          )}
+                        </Box>
+
+                        <Button
+                          alignSelf="flex-start"
+                          colorScheme="green"
+                          size="sm"
+                          onClick={() => handleNavigateToProfile(player._id)}
+                        >
+                          Ver perfil completo
+                        </Button>
+                      </VStack>
+                    </Box>
+                  </Collapse>
+                </Box>
+              );
+            })
+          ) : (
+            <Box
+              bg="white"
+              p={8}
+              borderRadius="2xl"
+              textAlign="center"
+              color="gray.500"
+            >
+              Nenhum jogador encontrado.
+            </Box>
+          )}
+        </VStack>
+      </VStack>
     </Box>
   );
 };
