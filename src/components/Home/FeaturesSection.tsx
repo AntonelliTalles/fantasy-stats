@@ -1,20 +1,85 @@
-import { Box, SimpleGrid, Text, VStack, Icon } from "@chakra-ui/react";
-import { FaTrophy, FaUsers, FaChartLine } from "react-icons/fa";
+import { Box, SimpleGrid, Text, VStack, Icon, Button } from "@chakra-ui/react";
+import { FaTrophy, FaUsers, FaChartLine, FaExchangeAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { HomeStats } from "./Homepage";
 
-const features = [
-  { icon: FaTrophy, title: "Achievements", desc: "Track your league wins and milestones." },
-  { icon: FaUsers, title: "H2H Battles", desc: "Compare players and compete head-to-head." },
-  { icon: FaChartLine, title: "Statistics", desc: "View performance trends over time." }
-];
+type FeaturesSectionProps = {
+  stats: HomeStats;
+};
 
-export default function FeaturesSection() {
+export default function FeaturesSection({ stats }: FeaturesSectionProps) {
+  const navigate = useNavigate();
+
+  const features = [
+    {
+      icon: FaUsers,
+      title: "Jogadores",
+      desc: "Veja todos os participantes cadastrados, seus times favoritos e títulos.",
+      value: stats.totalPlayers,
+      button: "Ver jogadores",
+      path: "/players-list",
+    },
+    {
+      icon: FaTrophy,
+      title: "Ligas",
+      desc: "Consulte ligas cadastradas, campeões, vice-campeões e temporadas.",
+      value: stats.totalLeagues,
+      button: "Ver ligas",
+      path: "/leagues/view",
+    },
+    {
+      icon: FaExchangeAlt,
+      title: "H2H Battles",
+      desc: "Compare confrontos diretos entre jogadores e rivalidades históricas.",
+      value: stats.totalHeadToHead,
+      button: "Ver H2H",
+      path: "/h2h",
+    },
+    {
+      icon: FaChartLine,
+      title: "Históricos",
+      desc: "Acompanhe desempenho por temporada, playoffs e saldo de pontos.",
+      value: stats.totalHistories,
+      button: "Ver históricos",
+      path: "/histories",
+    },
+  ];
+
   return (
-    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8} py={16} px={8}>
-      {features.map((feature, idx) => (
-        <VStack key={idx} bg="white" p={6} shadow="md" borderRadius="md" spacing={4}>
-          <Icon as={feature.icon} w={12} h={12} color="green.500" />
-          <Text fontWeight="bold" fontSize="lg">{feature.title}</Text>
-          <Text fontSize="sm" color="gray.600">{feature.desc}</Text>
+    <SimpleGrid columns={{ base: 1, md: 2, xl: 4 }} spacing={6} py={10} px={{ base: 6, md: 10 }}>
+      {features.map((feature) => (
+        <VStack
+          key={feature.title}
+          bg="white"
+          p={6}
+          shadow="md"
+          borderRadius="2xl"
+          spacing={4}
+          align="start"
+          transition="all 0.25s ease"
+          _hover={{
+            transform: "translateY(-6px)",
+            shadow: "xl",
+          }}
+        >
+          <Icon as={feature.icon} w={10} h={10} color="green.500" />
+
+          <Box>
+            <Text fontWeight="bold" fontSize="xl">
+              {feature.title}
+            </Text>
+            <Text fontSize="3xl" fontWeight="bold" color="green.600">
+              {feature.value}
+            </Text>
+          </Box>
+
+          <Text fontSize="sm" color="gray.600" minH="48px">
+            {feature.desc}
+          </Text>
+
+          <Button size="sm" colorScheme="green" variant="outline" onClick={() => navigate(feature.path)}>
+            {feature.button}
+          </Button>
         </VStack>
       ))}
     </SimpleGrid>

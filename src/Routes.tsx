@@ -21,7 +21,10 @@ import HomePage from './components/Home/Homepage';
 import LeaguesViewPage from './pages/Admin/LeaguesViewPage'
 import LeagueProfilePage from './pages/Admin/LeagueProfilePage';
 import PlayerProfilePage from './pages/Admin/PlayerProfilePage'
+import PublicDashboard from './components/Home2/HomePage';
 // import Login from 'pages/auth/Login';
+import HeadToHeadViewPage from './components/HeadToHeadView/HeadToHeadViewPage';
+import PlayerHistoryViewPage from './components/PlayerHistoryView/PlayerHistoryViewPage';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -35,6 +38,9 @@ const AppRoutes: React.FC = () => {
         <Route path="/leagues/view" element={<LeaguesViewPage />} />
         <Route path="/view-league/:leagueId" element={<LeagueProfilePage />} />
         <Route path="/profile/:playerId" element={<PlayerProfilePage />} />
+        <Route path="/h2h" element={<HeadToHeadViewPage />} />
+        <Route path="/histories" element={<PlayerHistoryViewPage />} />
+        <Route path="/dashboard" element={<PublicDashboard />} />
 
 
 

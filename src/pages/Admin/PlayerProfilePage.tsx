@@ -54,6 +54,7 @@ export default function PlayerProfilePage() {
 
   const cardBg = useColorModeValue('white', 'gray.800')
   const cardBorder = useColorModeValue('gray.200', 'gray.700')
+  const leagueItemHoverBg = useColorModeValue('gray.100', 'gray.700')
   const navigate = useNavigate()
 
   const { data: players, isLoading, isError } = useQuery<Player[]>({
@@ -483,7 +484,7 @@ export default function PlayerProfilePage() {
               cursor="pointer"
               _hover={{
                 boxShadow: 'md',
-                bg: useColorModeValue('gray.100', 'gray.700'),
+                bg: leagueItemHoverBg,
               }}
               onClick={() => navigate(`/view-league/${league._id}`)}
             >

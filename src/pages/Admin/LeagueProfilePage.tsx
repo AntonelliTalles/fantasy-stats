@@ -23,6 +23,7 @@ export default function LeagueProfilePage() {
   const cardBg = useColorModeValue('white', 'gray.800')
   const cardBorder = useColorModeValue('gray.200', 'gray.700')
   const playersItemBg = useColorModeValue('gray.50', 'gray.700')
+  const playersItemHoverBg = useColorModeValue('gray.100', 'gray.600')
 
   const navigate = useNavigate()
 
@@ -184,7 +185,7 @@ export default function LeagueProfilePage() {
                   whileHover={{ scale: 1.03 }}
                   _hover={{
                     boxShadow: 'md',
-                    bg: useColorModeValue('gray.100', 'gray.600'),
+                    bg: playersItemHoverBg,
                   }}
                   onClick={() => navigate(`/profile/${player._id}`)}
                 >
