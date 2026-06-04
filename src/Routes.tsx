@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import NewsList from './pages/NewsList';
 import NewsDetail from './pages/NewsDetail';
 import AdminLayout from './components/admin/AdminLayout';
@@ -28,7 +28,6 @@ import PlayerHistoryViewPage from './components/PlayerHistoryView/PlayerHistoryV
 
 const AppRoutes: React.FC = () => {
   return (
-    <Router>
       <Routes>
         {/* Rotas públicas */}
         <Route path="/" element={<HomePage />} />
@@ -152,7 +151,6 @@ const AppRoutes: React.FC = () => {
           </AdminLayout>
          } />
       </Routes>
-    </Router>
   );
 };
 
