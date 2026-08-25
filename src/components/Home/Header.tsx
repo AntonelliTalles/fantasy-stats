@@ -34,6 +34,12 @@ export default function Header() {
           <Button variant="ghost" onClick={() => navigate("/leagues/view")}>
             Ligas
           </Button>
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/power-ranking")}
+          >
+            Ranking
+          </Button>
         </HStack>
       </Flex>
     </Box>
