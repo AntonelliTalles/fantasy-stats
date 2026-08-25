@@ -26,21 +26,30 @@ import api from "../../services/api";
 
 type PlayerHistory = {
   _id: string;
+
   league?: {
     _id: string;
     name: string;
   };
+
   player?: {
     _id: string;
     name: string;
   };
+
   regularWins: number;
   regularLosses: number;
+  regularTies: number;
+
+  madePlayoffs: boolean;
+
   playoffsWins: number;
   playoffsLosses: number;
+
   pointsScored: number;
   pointsConceded: number;
   pointDifference: number;
+
   finalPosition: number;
   seasonYear: number;
 };
@@ -137,12 +146,14 @@ export default function PlayerHistoryViewPage() {
         acc.pointsScored += history.pointsScored;
         acc.pointsConceded += history.pointsConceded;
         acc.pointDifference += history.pointDifference;
+        acc.regularTies += history.regularTies ?? 0;
 
         return acc;
       },
       {
         regularWins: 0,
         regularLosses: 0,
+        regularTies: 0,
         playoffsWins: 0,
         playoffsLosses: 0,
         pointsScored: 0,
@@ -244,7 +255,7 @@ export default function PlayerHistoryViewPage() {
             <Stat>
               <StatLabel>Recorde Regular</StatLabel>
               <StatNumber>
-                {totals.regularWins}-{totals.regularLosses}
+                {totals.regularWins}-{totals.regularLosses}-{totals.regularTies}
               </StatNumber>
             </Stat>
           </Box>
@@ -283,6 +294,7 @@ export default function PlayerHistoryViewPage() {
                 <Th>Liga</Th>
                 <Th>Ano</Th>
                 <Th>Regular</Th>
+                <Th>Classificação</Th>
                 <Th>Playoffs</Th>
                 <Th>Pontos Marcados</Th>
                 <Th>Pontos Sofridos</Th>
@@ -299,10 +311,22 @@ export default function PlayerHistoryViewPage() {
                     <Td>{history.league?.name || "-"}</Td>
                     <Td>{history.seasonYear}</Td>
                     <Td>
-                      {history.regularWins}-{history.regularLosses}
+                      {history.regularWins ?? 0}-
+                      {history.regularLosses ?? 0}-
+                      {history.regularTies ?? 0}
                     </Td>
                     <Td>
-                      {history.playoffsWins}-{history.playoffsLosses}
+                      <Badge
+                        colorScheme={history.madePlayoffs ? "green" : "gray"}
+                      >
+                        {history.madePlayoffs
+                          ? "Playoffs"
+                          : "Não classificou"}
+                      </Badge>
+                    </Td>
+                    <Td>
+                      {history.playoffsWins ?? 0}-
+                      {history.playoffsLosses ?? 0}
                     </Td>
                     <Td>{history.pointsScored}</Td>
                     <Td>{history.pointsConceded}</Td>
@@ -316,7 +340,7 @@ export default function PlayerHistoryViewPage() {
                 ))
               ) : (
                 <Tr>
-                  <Td colSpan={9} textAlign="center" py={8} color="gray.500">
+                  <Td colSpan={10} textAlign="center" py={8} color="gray.500">
                     Nenhum histórico encontrado.
                   </Td>
                 </Tr>

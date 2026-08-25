@@ -25,6 +25,7 @@ import PublicDashboard from './components/Home2/HomePage';
 // import Login from 'pages/auth/Login';
 import HeadToHeadViewPage from './components/HeadToHeadView/HeadToHeadViewPage';
 import PlayerHistoryViewPage from './components/PlayerHistoryView/PlayerHistoryViewPage';
+import PowerRankingPage from "./components/PowerRanking/PowerRankingPage";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -40,6 +41,8 @@ const AppRoutes: React.FC = () => {
         <Route path="/h2h" element={<HeadToHeadViewPage />} />
         <Route path="/histories" element={<PlayerHistoryViewPage />} />
         <Route path="/dashboard" element={<PublicDashboard />} />
+        <Route path="/power-ranking" element={<PowerRankingPage />}
+/>
 
 
 

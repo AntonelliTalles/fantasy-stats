@@ -1,42 +1,76 @@
-import React, { useState, useEffect } from "react";
-import { Table, Thead, Tbody, Tr, Th, Td, Button, HStack } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import {
+  Badge,
+  Button,
+  HStack,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  useToast,
+} from "@chakra-ui/react";
 import axios from "axios";
-import { useToast } from "@chakra-ui/react";
-import EditPlayerHistoryModal from "./EditPlayerHistoryModal"; // Modal de edição
+
+import EditPlayerHistoryModal from "./EditPlayerHistoryModal";
 
 const ManagePlayerHistory = () => {
   const [historyRecords, setHistoryRecords] = useState<any[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<any | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
+
   const toast = useToast();
 
   useEffect(() => {
     const fetchHistoryRecords = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/player-history");
+        const response = await axios.get(
+          "http://localhost:5000/api/player-history"
+        );
+
         setHistoryRecords(response.data);
       } catch (error) {
-        console.error("Erro ao buscar históricos de jogadores", error);
+        console.error(
+          "Erro ao buscar históricos de jogadores:",
+          error
+        );
       }
     };
+
     fetchHistoryRecords();
   }, []);
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:5000/api/player-history/${id}`);
-      setHistoryRecords(historyRecords.filter((record) => record._id !== id));
+      await axios.delete(
+        `http://localhost:5000/api/player-history/${id}`
+      );
+
+      setHistoryRecords((prevRecords) =>
+        prevRecords.filter(
+          (record) => record._id !== id
+        )
+      );
+
       toast({
         title: "Histórico Deletado",
-        description: "O histórico foi deletado com sucesso.",
+        description:
+          "O histórico foi deletado com sucesso.",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
     } catch (error) {
+      console.error(
+        "Erro ao deletar histórico:",
+        error
+      );
+
       toast({
         title: "Erro ao Deletar Histórico",
-        description: "Houve um erro ao deletar o histórico.",
+        description:
+          "Houve um erro ao deletar o histórico.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -50,15 +84,18 @@ const ManagePlayerHistory = () => {
   };
 
   const handleSave = (updatedRecord: any) => {
-    // Atualiza o estado local de historyRecords com os dados mais recentes
     setHistoryRecords((prevRecords) =>
       prevRecords.map((record) =>
-        record._id === updatedRecord._id ? updatedRecord : record
+        record._id === updatedRecord._id
+          ? updatedRecord
+          : record
       )
     );
+
     toast({
       title: "Histórico Atualizado",
-      description: "O histórico foi atualizado com sucesso.",
+      description:
+        "O histórico foi atualizado com sucesso.",
       status: "success",
       duration: 3000,
       isClosable: true,
@@ -72,38 +109,91 @@ const ManagePlayerHistory = () => {
           <Tr>
             <Th>Liga</Th>
             <Th>Jogador</Th>
-            <Th>Vitórias Fase Regular</Th>
-            <Th>Derrotas Fase Regular</Th>
+
+            <Th>Vitórias Regular</Th>
+            <Th>Derrotas Regular</Th>
+            <Th>Empates Regular</Th>
+
+            <Th>Playoffs</Th>
+
             <Th>Vitórias Playoffs</Th>
             <Th>Derrotas Playoffs</Th>
+
             <Th>Pontos Marcados</Th>
             <Th>Pontos Sofridos</Th>
-            <Th>Saldo de Pontos</Th>
+            <Th>Saldo</Th>
+
             <Th>Posição Final</Th>
+            <Th>Ano</Th>
+
             <Th>Ações</Th>
           </Tr>
         </Thead>
+
         <Tbody>
           {historyRecords.map((record) => (
             <Tr key={record._id}>
-              <Td>{record.league.name}</Td>  {/* Exibe o nome da liga */}
-              <Td>{record.player.name}</Td>  {/* Exibe o nome do jogador */}
-              <Td>{record.regularWins}</Td>
-              <Td>{record.regularLosses}</Td>
-              <Td>{record.playoffsWins}</Td>
-              <Td>{record.playoffsLosses}</Td>
-              <Td>{record.pointsScored}</Td>
-              <Td>{record.pointsConceded}</Td>
-              <Td>{record.pointDifference}</Td>
-              <Td>{record.finalPosition}</Td>
               <Td>
-                 <HStack spacing={2}>
-                    <Button colorScheme="blue" onClick={() => handleEdit(record)}>
+                {record.league?.name ?? "Liga não encontrada"}
+              </Td>
+
+              <Td>
+                {record.player?.name ?? "Jogador não encontrado"}
+              </Td>
+
+              <Td>{record.regularWins ?? 0}</Td>
+
+              <Td>{record.regularLosses ?? 0}</Td>
+
+              <Td>{record.regularTies ?? 0}</Td>
+
+              <Td>
+                <Badge
+                  colorScheme={
+                    record.madePlayoffs
+                      ? "green"
+                      : "gray"
+                  }
+                >
+                  {record.madePlayoffs
+                    ? "Classificado"
+                    : "Não classificado"}
+                </Badge>
+              </Td>
+
+              <Td>{record.playoffsWins ?? 0}</Td>
+
+              <Td>{record.playoffsLosses ?? 0}</Td>
+
+              <Td>{record.pointsScored ?? 0}</Td>
+
+              <Td>{record.pointsConceded ?? 0}</Td>
+
+              <Td>{record.pointDifference ?? 0}</Td>
+
+              <Td>{record.finalPosition ?? "-"}</Td>
+
+              <Td>{record.seasonYear ?? "-"}</Td>
+
+              <Td>
+                <HStack spacing={2}>
+                  <Button
+                    colorScheme="blue"
+                    onClick={() =>
+                      handleEdit(record)
+                    }
+                  >
                     Editar
-                    </Button>
-                    <Button colorScheme="red" ml={2} onClick={() => handleDelete(record._id)}>
+                  </Button>
+
+                  <Button
+                    colorScheme="red"
+                    onClick={() =>
+                      handleDelete(record._id)
+                    }
+                  >
                     Excluir
-                    </Button>
+                  </Button>
                 </HStack>
               </Td>
             </Tr>
@@ -115,7 +205,9 @@ const ManagePlayerHistory = () => {
         <EditPlayerHistoryModal
           record={selectedRecord}
           isOpen={isModalOpen}
-          onClose={() => setModalOpen(false)}
+          onClose={() =>
+            setModalOpen(false)
+          }
           onSave={handleSave}
         />
       )}
