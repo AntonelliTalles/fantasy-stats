@@ -15,6 +15,8 @@ import axios from "axios";
 
 import EditPlayerHistoryModal from "./EditPlayerHistoryModal";
 import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
+import Pagination from '../Pagination'
+import { usePagination } from '../../../hooks/usePagination'
 
 const ManagePlayerHistory = () => {
   const [historyRecords, setHistoryRecords] = useState<any[]>([]);
@@ -26,6 +28,19 @@ const ManagePlayerHistory = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const toast = useToast();
+
+  const {
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    totalItems,
+    paginatedItems,
+    startItem,
+    endItem,
+  } = usePagination({
+    items: historyRecords,
+    itemsPerPage: 10,
+  })
 
   useEffect(() => {
     const fetchHistoryRecords = async () => {
@@ -166,7 +181,7 @@ const ManagePlayerHistory = () => {
         </Thead>
 
         <Tbody>
-          {historyRecords.map((record) => (
+          {paginatedItems.map((record) => (
             <Tr key={record._id}>
               <Td>
                 {record.league?.name ?? "Liga não encontrada"}
@@ -231,6 +246,14 @@ const ManagePlayerHistory = () => {
           ))}
         </Tbody>
       </Table>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        startItem={startItem}
+        endItem={endItem}
+        onPageChange={setCurrentPage}
+      />
 
       {selectedRecord && (
         <EditPlayerHistoryModal
