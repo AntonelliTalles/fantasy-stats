@@ -16,6 +16,7 @@ import { asyncGetLeagues } from '../../services/leagueService'
 import { League } from '../../types/league'
 import LeaguePodium from '../../components/league/LeaguePodium'
 import { MotionBox } from '../../components/motion/MotionBox'
+import LeagueStandingsTable from '../../components/league/LeagueStandingsTable'
 
 export default function LeagueProfilePage() {
   const { leagueId } = useParams<{ leagueId: string }>()
@@ -203,6 +204,13 @@ export default function LeagueProfilePage() {
               Nenhum jogador cadastrado para esta liga.
             </Text>
           )}
+        </MotionBox>
+        <MotionBox
+          mt={8}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <LeagueStandingsTable leagueId={league._id} />
         </MotionBox>
       </Stack>
     </MotionBox>
