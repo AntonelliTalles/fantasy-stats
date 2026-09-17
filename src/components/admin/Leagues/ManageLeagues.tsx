@@ -12,6 +12,8 @@ import axios from "axios";
 
 import EditLeagueModal from "./EditLeagueModal";
 import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
+import Pagination from "../Pagination";
+import { usePagination } from "../../../hooks/usePagination";
 
 const ManageLeagues = () => {
   const [leagues, setLeagues] = useState<any[]>([]);
@@ -21,6 +23,19 @@ const ManageLeagues = () => {
 
   const [leagueToDelete, setLeagueToDelete] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const {
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    totalItems,
+    paginatedItems,
+    startItem,
+    endItem,
+  } = usePagination({
+    items: leagues,
+    itemsPerPage: 10,
+  });
 
   useEffect(() => {
     const fetchLeagues = async () => {
@@ -100,7 +115,7 @@ const ManageLeagues = () => {
         </Thead>
 
         <Tbody>
-          {leagues.map((league) => (
+          {paginatedItems.map((league) => (
             <Tr key={league._id}>
               <Td>{league.name}</Td>
 
@@ -128,6 +143,15 @@ const ManageLeagues = () => {
           ))}
         </Tbody>
       </Table>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        startItem={startItem}
+        endItem={endItem}
+        onPageChange={setCurrentPage}
+      />
 
       {selectedLeague && (
         <EditLeagueModal

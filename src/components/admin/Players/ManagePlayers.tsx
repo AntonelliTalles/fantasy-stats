@@ -14,6 +14,8 @@ import axios from "axios";
 
 import EditPlayerModal from "./EditPlayerModal";
 import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
+import Pagination from "../Pagination";
+import { usePagination } from "../../../hooks/usePagination";
 
 const ManagePlayers = () => {
   const [players, setPlayers] = useState<any[]>([]);
@@ -25,6 +27,19 @@ const ManagePlayers = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const toast = useToast();
+
+  const {
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    totalItems,
+    paginatedItems,
+    startItem,
+    endItem,
+  } = usePagination({
+    items: players,
+    itemsPerPage: 10,
+  });
 
   const fetchPlayers = async () => {
     try {
@@ -121,7 +136,7 @@ const ManagePlayers = () => {
         </Thead>
 
         <Tbody>
-          {players.map((player) => (
+          {paginatedItems.map((player) => (
             <Tr key={player._id}>
               <Td>{player.name}</Td>
 
@@ -158,6 +173,15 @@ const ManagePlayers = () => {
           ))}
         </Tbody>
       </Table>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        startItem={startItem}
+        endItem={endItem}
+        onPageChange={setCurrentPage}
+      />
 
       {selectedPlayer && (
         <EditPlayerModal

@@ -14,6 +14,8 @@ import axios from "axios";
 
 import EditHeadToHeadModal from "./EditHeadToHeadModal";
 import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
+import Pagination from "../Pagination";
+import { usePagination } from "../../../hooks/usePagination";
 
 const ManageHeadToHead = () => {
   const [matches, setMatches] = useState<any[]>([]);
@@ -26,6 +28,19 @@ const ManageHeadToHead = () => {
 
   const toast = useToast();
 
+  const {
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    totalItems,
+    paginatedItems,
+    startItem,
+    endItem,
+  } = usePagination({
+    items: matches,
+    itemsPerPage: 10,
+  });
+
   useEffect(() => {
     const fetchMatches = async () => {
       try {
@@ -35,7 +50,10 @@ const ManageHeadToHead = () => {
 
         setMatches(response.data);
       } catch (error) {
-        console.error("Erro ao buscar confrontos diretos", error);
+        console.error(
+          "Erro ao buscar confrontos diretos",
+          error
+        );
       }
     };
 
@@ -93,7 +111,10 @@ const ManageHeadToHead = () => {
 
       setMatchToDelete(null);
     } catch (error) {
-      console.error("Erro ao deletar confronto", error);
+      console.error(
+        "Erro ao deletar confronto",
+        error
+      );
 
       toast({
         title: "Erro ao deletar confronto",
@@ -142,23 +163,39 @@ const ManageHeadToHead = () => {
         </Thead>
 
         <Tbody>
-          {matches.map((match) => (
+          {paginatedItems.map((match) => (
             <Tr key={match._id}>
-              <Td>{match.league?.name ?? "-"}</Td>
+              <Td>
+                {match.league?.name ?? "-"}
+              </Td>
 
-              <Td>{match.player1?.name ?? "-"}</Td>
+              <Td>
+                {match.player1?.name ?? "-"}
+              </Td>
 
-              <Td>{match.player2?.name ?? "-"}</Td>
+              <Td>
+                {match.player2?.name ?? "-"}
+              </Td>
 
-              <Td>{match.player1Wins}</Td>
+              <Td>
+                {match.player1Wins}
+              </Td>
 
-              <Td>{match.player2Wins}</Td>
+              <Td>
+                {match.player2Wins}
+              </Td>
 
-              <Td>{match.player1PlayoffsWins}</Td>
+              <Td>
+                {match.player1PlayoffsWins}
+              </Td>
 
-              <Td>{match.player2PlayoffsWins}</Td>
+              <Td>
+                {match.player2PlayoffsWins}
+              </Td>
 
-              <Td>{match.totalMatches}</Td>
+              <Td>
+                {match.totalMatches}
+              </Td>
 
               <Td>
                 <HStack spacing={2}>
@@ -181,6 +218,15 @@ const ManageHeadToHead = () => {
           ))}
         </Tbody>
       </Table>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        startItem={startItem}
+        endItem={endItem}
+        onPageChange={setCurrentPage}
+      />
 
       {selectedMatch && (
         <EditHeadToHeadModal
