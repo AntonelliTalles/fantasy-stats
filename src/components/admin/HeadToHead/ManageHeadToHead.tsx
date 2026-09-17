@@ -1,52 +1,127 @@
-import React, { useState, useEffect } from "react";
-import { Table, Thead, Tbody, Tr, Th, Td, Button, HStack } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Button,
+  HStack,
+  useToast,
+} from "@chakra-ui/react";
 import axios from "axios";
-import { useToast } from "@chakra-ui/react";
-import EditHeadToHeadModal from "./EditHeadToHeadModal"; // Modal de edição
+
+import EditHeadToHeadModal from "./EditHeadToHeadModal";
+import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
 
 const ManageHeadToHead = () => {
   const [matches, setMatches] = useState<any[]>([]);
+
   const [selectedMatch, setSelectedMatch] = useState<any | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
+
+  const [matchToDelete, setMatchToDelete] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const toast = useToast();
 
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/head-to-head");
+        const response = await axios.get(
+          "http://localhost:5000/api/head-to-head"
+        );
+
         setMatches(response.data);
       } catch (error) {
         console.error("Erro ao buscar confrontos diretos", error);
       }
     };
+
     fetchMatches();
   }, []);
 
-  const handleDelete = async (id: string) => {
+  const handleEdit = (match: any) => {
+    setSelectedMatch(match);
+    setModalOpen(true);
+  };
+
+  const handleSave = (updatedMatch: any) => {
+    setMatches((currentMatches) =>
+      currentMatches.map((match) =>
+        match._id === updatedMatch._id
+          ? updatedMatch
+          : match
+      )
+    );
+  };
+
+  const handleDeleteClick = (match: any) => {
+    setMatchToDelete(match);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    if (isDeleting) return;
+
+    setMatchToDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!matchToDelete) return;
+
     try {
-      await axios.delete(`http://localhost:5000/api/head-to-head/${id}`);
-      setMatches(matches.filter((match) => match._id !== id));
+      setIsDeleting(true);
+
+      await axios.delete(
+        `http://localhost:5000/api/head-to-head/${matchToDelete._id}`
+      );
+
+      setMatches((currentMatches) =>
+        currentMatches.filter(
+          (match) => match._id !== matchToDelete._id
+        )
+      );
+
       toast({
-        title: "Confronto Deletado",
+        title: "Confronto deletado",
         description: "O confronto foi deletado com sucesso.",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
+
+      setMatchToDelete(null);
     } catch (error) {
+      console.error("Erro ao deletar confronto", error);
+
       toast({
-        title: "Erro ao Deletar Confronto",
+        title: "Erro ao deletar confronto",
         description: "Houve um erro ao deletar o confronto.",
         status: "error",
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  const handleEdit = (match: any) => {
-    setSelectedMatch(match);
-    setModalOpen(true);  
+  const getMatchDeleteName = () => {
+    if (!matchToDelete) return undefined;
+
+    const player1 =
+      matchToDelete.player1?.name ?? "Jogador 1";
+
+    const player2 =
+      matchToDelete.player2?.name ?? "Jogador 2";
+
+    const league =
+      matchToDelete.league?.name;
+
+    return league
+      ? `${player1} x ${player2} — ${league}`
+      : `${player1} x ${player2}`;
   };
 
   return (
@@ -65,27 +140,43 @@ const ManageHeadToHead = () => {
             <Th>Ações</Th>
           </Tr>
         </Thead>
+
         <Tbody>
           {matches.map((match) => (
             <Tr key={match._id}>
-              <Td>{match.league.name}</Td>
-              <Td>{match.player1.name}</Td>
-              <Td>{match.player2.name}</Td>
+              <Td>{match.league?.name ?? "-"}</Td>
+
+              <Td>{match.player1?.name ?? "-"}</Td>
+
+              <Td>{match.player2?.name ?? "-"}</Td>
+
               <Td>{match.player1Wins}</Td>
+
               <Td>{match.player2Wins}</Td>
+
               <Td>{match.player1PlayoffsWins}</Td>
+
               <Td>{match.player2PlayoffsWins}</Td>
+
               <Td>{match.totalMatches}</Td>
-             <Td>
-              <HStack spacing={2}>
-                <Button colorScheme="blue" onClick={() => handleEdit(match)}>
-                  Editar
-                </Button>
-                <Button colorScheme="red" onClick={() => handleDelete(match._id)}>
-                  Excluir
-                </Button>
-              </HStack>
-            </Td>
+
+              <Td>
+                <HStack spacing={2}>
+                  <Button
+                    colorScheme="blue"
+                    onClick={() => handleEdit(match)}
+                  >
+                    Editar
+                  </Button>
+
+                  <Button
+                    colorScheme="red"
+                    onClick={() => handleDeleteClick(match)}
+                  >
+                    Excluir
+                  </Button>
+                </HStack>
+              </Td>
             </Tr>
           ))}
         </Tbody>
@@ -96,11 +187,17 @@ const ManageHeadToHead = () => {
           match={selectedMatch}
           isOpen={isModalOpen}
           onClose={() => setModalOpen(false)}
-          onSave={(updatedMatch: any) => {
-            setMatches(matches.map((match) => (match._id === updatedMatch._id ? updatedMatch : match)));
-          }}
+          onSave={handleSave}
         />
       )}
+
+      <ConfirmDeleteDialog
+        isOpen={!!matchToDelete}
+        itemName={getMatchDeleteName()}
+        isDeleting={isDeleting}
+        onClose={handleCloseDeleteDialog}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };

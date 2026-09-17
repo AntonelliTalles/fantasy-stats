@@ -14,11 +14,16 @@ import {
 import axios from "axios";
 
 import EditPlayerHistoryModal from "./EditPlayerHistoryModal";
+import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
 
 const ManagePlayerHistory = () => {
   const [historyRecords, setHistoryRecords] = useState<any[]>([]);
+
   const [selectedRecord, setSelectedRecord] = useState<any | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
+
+  const [recordToDelete, setRecordToDelete] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const toast = useToast();
 
@@ -41,43 +46,6 @@ const ManagePlayerHistory = () => {
     fetchHistoryRecords();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    try {
-      await axios.delete(
-        `http://localhost:5000/api/player-history/${id}`
-      );
-
-      setHistoryRecords((prevRecords) =>
-        prevRecords.filter(
-          (record) => record._id !== id
-        )
-      );
-
-      toast({
-        title: "Histórico Deletado",
-        description:
-          "O histórico foi deletado com sucesso.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
-      console.error(
-        "Erro ao deletar histórico:",
-        error
-      );
-
-      toast({
-        title: "Erro ao Deletar Histórico",
-        description:
-          "Houve um erro ao deletar o histórico.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
   const handleEdit = (record: any) => {
     setSelectedRecord(record);
     setModalOpen(true);
@@ -94,12 +62,79 @@ const ManagePlayerHistory = () => {
 
     toast({
       title: "Histórico Atualizado",
-      description:
-        "O histórico foi atualizado com sucesso.",
+      description: "O histórico foi atualizado com sucesso.",
       status: "success",
       duration: 3000,
       isClosable: true,
     });
+  };
+
+  const handleDeleteClick = (record: any) => {
+    setRecordToDelete(record);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    if (isDeleting) return;
+
+    setRecordToDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!recordToDelete) return;
+
+    try {
+      setIsDeleting(true);
+
+      await axios.delete(
+        `http://localhost:5000/api/player-history/${recordToDelete._id}`
+      );
+
+      setHistoryRecords((prevRecords) =>
+        prevRecords.filter(
+          (record) => record._id !== recordToDelete._id
+        )
+      );
+
+      toast({
+        title: "Histórico deletado",
+        description: "O histórico foi deletado com sucesso.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      setRecordToDelete(null);
+    } catch (error) {
+      console.error(
+        "Erro ao deletar histórico:",
+        error
+      );
+
+      toast({
+        title: "Erro ao deletar histórico",
+        description: "Houve um erro ao deletar o histórico.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const getRecordDeleteName = () => {
+    if (!recordToDelete) return undefined;
+
+    const player =
+      recordToDelete.player?.name ?? "Jogador";
+
+    const league =
+      recordToDelete.league?.name ?? "Liga";
+
+    const year =
+      recordToDelete.seasonYear ?? "Ano não informado";
+
+    return `${player} — ${league} — ${year}`;
   };
 
   return (
@@ -179,18 +214,14 @@ const ManagePlayerHistory = () => {
                 <HStack spacing={2}>
                   <Button
                     colorScheme="blue"
-                    onClick={() =>
-                      handleEdit(record)
-                    }
+                    onClick={() => handleEdit(record)}
                   >
                     Editar
                   </Button>
 
                   <Button
                     colorScheme="red"
-                    onClick={() =>
-                      handleDelete(record._id)
-                    }
+                    onClick={() => handleDeleteClick(record)}
                   >
                     Excluir
                   </Button>
@@ -205,12 +236,18 @@ const ManagePlayerHistory = () => {
         <EditPlayerHistoryModal
           record={selectedRecord}
           isOpen={isModalOpen}
-          onClose={() =>
-            setModalOpen(false)
-          }
+          onClose={() => setModalOpen(false)}
           onSave={handleSave}
         />
       )}
+
+      <ConfirmDeleteDialog
+        isOpen={!!recordToDelete}
+        itemName={getRecordDeleteName()}
+        isDeleting={isDeleting}
+        onClose={handleCloseDeleteDialog}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };
