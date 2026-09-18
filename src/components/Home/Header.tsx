@@ -1,6 +1,8 @@
 import React from "react";
-import { Box, Flex, HStack, Text, Button } from "@chakra-ui/react";
+import { Box, Flex, HStack, Image, Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+
+import logo from "../../images/fs.png";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -13,14 +15,15 @@ export default function Header() {
         align="center"
         justify="space-between"
       >
-        <Text
-          fontSize="xl"
-          fontWeight="bold"
+        <Image
+          src={logo}
+          alt="Fantasy Stats"
+          w={{ base: "140px", md: "170px" }}
+          maxH="48px"
+          objectFit="contain"
           cursor="pointer"
           onClick={() => navigate("/")}
-        >
-          Fantasy Stats
-        </Text>
+        />
 
         <HStack spacing={6}>
           <Button variant="ghost" onClick={() => navigate("/histories")}>
@@ -34,6 +37,7 @@ export default function Header() {
           <Button variant="ghost" onClick={() => navigate("/leagues/view")}>
             Ligas
           </Button>
+
           <Button
             variant="ghost"
             onClick={() => navigate("/power-ranking")}
