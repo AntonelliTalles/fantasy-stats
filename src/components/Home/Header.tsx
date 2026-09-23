@@ -30,6 +30,13 @@ export default function Header() {
             Stats
           </Button>
 
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/all-time")}
+          >
+            All-Time
+          </Button>
+
           <Button variant="ghost" onClick={() => navigate("/h2h")}>
             H2H
           </Button>
