@@ -10,8 +10,8 @@ import {
   HStack,
   useToast,
 } from "@chakra-ui/react";
-import axios from "axios";
 
+import api from "../../../services/api";
 import EditHeadToHeadModal from "./EditHeadToHeadModal";
 import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
 import Pagination from "../Pagination";
@@ -20,10 +20,14 @@ import { usePagination } from "../../../hooks/usePagination";
 const ManageHeadToHead = () => {
   const [matches, setMatches] = useState<any[]>([]);
 
-  const [selectedMatch, setSelectedMatch] = useState<any | null>(null);
+  const [selectedMatch, setSelectedMatch] =
+    useState<any | null>(null);
+
   const [isModalOpen, setModalOpen] = useState(false);
 
-  const [matchToDelete, setMatchToDelete] = useState<any | null>(null);
+  const [matchToDelete, setMatchToDelete] =
+    useState<any | null>(null);
+
   const [isDeleting, setIsDeleting] = useState(false);
 
   const toast = useToast();
@@ -41,22 +45,29 @@ const ManageHeadToHead = () => {
     itemsPerPage: 10,
   });
 
+  const fetchMatches = async () => {
+    try {
+      const response = await api.get("/head-to-head");
+
+      setMatches(response.data);
+    } catch (error) {
+      console.error(
+        "Erro ao buscar confrontos diretos",
+        error
+      );
+
+      toast({
+        title: "Erro ao buscar confrontos",
+        description:
+          "Não foi possível carregar os confrontos diretos.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/api/head-to-head"
-        );
-
-        setMatches(response.data);
-      } catch (error) {
-        console.error(
-          "Erro ao buscar confrontos diretos",
-          error
-        );
-      }
-    };
-
     fetchMatches();
   }, []);
 
@@ -73,6 +84,8 @@ const ManageHeadToHead = () => {
           : match
       )
     );
+
+    setSelectedMatch(updatedMatch);
   };
 
   const handleDeleteClick = (match: any) => {
@@ -91,8 +104,8 @@ const ManageHeadToHead = () => {
     try {
       setIsDeleting(true);
 
-      await axios.delete(
-        `http://localhost:5000/api/head-to-head/${matchToDelete._id}`
+      await api.delete(
+        `/head-to-head/${matchToDelete._id}`
       );
 
       setMatches((currentMatches) =>
@@ -103,7 +116,8 @@ const ManageHeadToHead = () => {
 
       toast({
         title: "Confronto deletado",
-        description: "O confronto foi deletado com sucesso.",
+        description:
+          "O confronto foi deletado com sucesso.",
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -118,7 +132,8 @@ const ManageHeadToHead = () => {
 
       toast({
         title: "Erro ao deletar confronto",
-        description: "Houve um erro ao deletar o confronto.",
+        description:
+          "Houve um erro ao deletar o confronto.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -137,8 +152,7 @@ const ManageHeadToHead = () => {
     const player2 =
       matchToDelete.player2?.name ?? "Jogador 2";
 
-    const league =
-      matchToDelete.league?.name;
+    const league = matchToDelete.league?.name;
 
     return league
       ? `${player1} x ${player2} — ${league}`
@@ -165,37 +179,21 @@ const ManageHeadToHead = () => {
         <Tbody>
           {paginatedItems.map((match) => (
             <Tr key={match._id}>
-              <Td>
-                {match.league?.name ?? "-"}
-              </Td>
+              <Td>{match.league?.name ?? "-"}</Td>
 
-              <Td>
-                {match.player1?.name ?? "-"}
-              </Td>
+              <Td>{match.player1?.name ?? "-"}</Td>
 
-              <Td>
-                {match.player2?.name ?? "-"}
-              </Td>
+              <Td>{match.player2?.name ?? "-"}</Td>
 
-              <Td>
-                {match.player1Wins}
-              </Td>
+              <Td>{match.player1Wins}</Td>
 
-              <Td>
-                {match.player2Wins}
-              </Td>
+              <Td>{match.player2Wins}</Td>
 
-              <Td>
-                {match.player1PlayoffsWins}
-              </Td>
+              <Td>{match.player1PlayoffsWins}</Td>
 
-              <Td>
-                {match.player2PlayoffsWins}
-              </Td>
+              <Td>{match.player2PlayoffsWins}</Td>
 
-              <Td>
-                {match.totalMatches}
-              </Td>
+              <Td>{match.totalMatches}</Td>
 
               <Td>
                 <HStack spacing={2}>
@@ -208,7 +206,9 @@ const ManageHeadToHead = () => {
 
                   <Button
                     colorScheme="red"
-                    onClick={() => handleDeleteClick(match)}
+                    onClick={() =>
+                      handleDeleteClick(match)
+                    }
                   >
                     Excluir
                   </Button>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Input, Button, Tag, TagCloseButton, TagLabel, Stack, useToast  } from "@chakra-ui/react";
-import axios from "axios";
+import api from "../../../services/api";
 
 const AddPlayer = () => {
   const [name, setName] = useState("");
@@ -14,8 +14,8 @@ const AddPlayer = () => {
   const toast = useToast();
 
   const handleTagAdd = (
-    input: string, 
-    setTags: React.Dispatch<React.SetStateAction<string[]>>, 
+    input: string,
+    setTags: React.Dispatch<React.SetStateAction<string[]>>,
     currentTags: string[],
     setInput: React.Dispatch<React.SetStateAction<string>>
   ) => {
@@ -26,7 +26,7 @@ const AddPlayer = () => {
   };
 
   const handleTagRemove = (
-    input: string, 
+    input: string,
     setTags: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
     setTags(prevTags => prevTags.filter(tag => tag !== input));
@@ -41,21 +41,24 @@ const AddPlayer = () => {
       titlesWon
     };
     try {
-      const response = await axios.post("http://localhost:5000/api/players", playerData);
+      const response = await api.post(
+        "/players",
+        playerData
+      );
       console.log("Jogador Cadastrado:", response.data);
 
       toast({
         title: "Jogador Cadastrado!",
         description: "O jogador foi cadastrado com sucesso.",
         status: "success",
-        duration: 3000,  
+        duration: 3000,
         isClosable: true,
       });
 
       setTimeout(() => {
         window.location.reload();
       }, 3000);
-      
+
     } catch (error) {
       console.error("Erro ao cadastrar jogador:", error);
     }
@@ -63,12 +66,12 @@ const AddPlayer = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Input 
-        placeholder="Nome do jogador" 
-        value={name} 
-        onChange={(e) => setName(e.target.value)} 
+      <Input
+        placeholder="Nome do jogador"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
       />
-      
+
       <Stack spacing={2} mt={4}>
         <Input
           value={favoriteTeamsInput}
@@ -76,7 +79,7 @@ const AddPlayer = () => {
           onChange={(e) => setFavoriteTeamsInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              e.preventDefault(); 
+              e.preventDefault();
               handleTagAdd(favoriteTeamsInput, setFavoriteTeams, favoriteTeams, setFavoriteTeamsInput);
             }
           }}
@@ -116,7 +119,7 @@ const AddPlayer = () => {
           onChange={(e) => setTitlesWonInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              e.preventDefault(); 
+              e.preventDefault();
               handleTagAdd(titlesWonInput, setTitlesWon, titlesWon, setTitlesWonInput);
             }
           }}

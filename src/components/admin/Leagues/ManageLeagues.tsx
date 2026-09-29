@@ -7,9 +7,10 @@ import {
   Th,
   Thead,
   Tr,
+  useToast,
 } from "@chakra-ui/react";
-import axios from "axios";
 
+import api from "../../../services/api";
 import EditLeagueModal from "./EditLeagueModal";
 import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
 import Pagination from "../Pagination";
@@ -24,6 +25,8 @@ const ManageLeagues = () => {
   const [leagueToDelete, setLeagueToDelete] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const toast = useToast();
+
   const {
     currentPage,
     setCurrentPage,
@@ -37,19 +40,25 @@ const ManageLeagues = () => {
     itemsPerPage: 10,
   });
 
+  const fetchLeagues = async () => {
+    try {
+      const response = await api.get("/leagues");
+
+      setLeagues(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar ligas", error);
+
+      toast({
+        title: "Erro ao buscar ligas",
+        description: "Não foi possível carregar as ligas.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   useEffect(() => {
-    const fetchLeagues = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/api/leagues"
-        );
-
-        setLeagues(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar ligas", error);
-      }
-    };
-
     fetchLeagues();
   }, []);
 
@@ -69,8 +78,8 @@ const ManageLeagues = () => {
     try {
       setIsDeleting(true);
 
-      await axios.delete(
-        `http://localhost:5000/api/leagues/${leagueToDelete._id}`
+      await api.delete(
+        `/leagues/${leagueToDelete._id}`
       );
 
       setLeagues((currentLeagues) =>
@@ -79,9 +88,25 @@ const ManageLeagues = () => {
         )
       );
 
+      toast({
+        title: "Liga deletada",
+        description: `${leagueToDelete.name} foi deletada com sucesso.`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
       setLeagueToDelete(null);
     } catch (error) {
       console.error("Erro ao deletar liga", error);
+
+      toast({
+        title: "Erro ao deletar liga",
+        description: "Houve um erro ao deletar a liga.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     } finally {
       setIsDeleting(false);
     }
@@ -100,6 +125,8 @@ const ManageLeagues = () => {
           : league
       )
     );
+
+    setSelectedLeague(updatedLeague);
   };
 
   return (

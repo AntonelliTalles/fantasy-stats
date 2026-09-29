@@ -10,7 +10,8 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import axios from "axios";
+
+import api from "../../../services/api";
 
 const PlayerHistoryForm = () => {
   const [leagues, setLeagues] = useState<any[]>([]);
@@ -19,59 +20,87 @@ const PlayerHistoryForm = () => {
   const [selectedLeague, setSelectedLeague] = useState("");
   const [selectedPlayer, setSelectedPlayer] = useState("");
 
-  // Fase regular
   const [regularWins, setRegularWins] = useState(0);
   const [regularLosses, setRegularLosses] = useState(0);
   const [regularTies, setRegularTies] = useState(0);
 
-  // Playoffs
   const [madePlayoffs, setMadePlayoffs] = useState(false);
   const [playoffsWins, setPlayoffsWins] = useState(0);
   const [playoffsLosses, setPlayoffsLosses] = useState(0);
 
-  // Pontuação
   const [pointsScored, setPointsScored] = useState(0);
   const [pointsConceded, setPointsConceded] = useState(0);
   const [pointDifference, setPointDifference] = useState(0);
 
-  // Resultado da temporada
   const [finalPosition, setFinalPosition] = useState(1);
   const [seasonYear, setSeasonYear] = useState(
     new Date().getFullYear()
   );
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toast = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [leaguesResponse, playersResponse] = await Promise.all([
-          axios.get("http://localhost:5000/api/leagues"),
-          axios.get("http://localhost:5000/api/players"),
-        ]);
+        const [leaguesResponse, playersResponse] =
+          await Promise.all([
+            api.get("/leagues"),
+            api.get("/players"),
+          ]);
 
         setLeagues(leaguesResponse.data);
         setPlayers(playersResponse.data);
       } catch (error) {
-        console.error("Erro ao buscar ligas e jogadores:", error);
+        console.error(
+          "Erro ao buscar ligas e jogadores:",
+          error
+        );
+
+        toast({
+          title: "Erro ao carregar dados",
+          description:
+            "Não foi possível carregar as ligas e os jogadores.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     };
 
     fetchData();
-  }, []);
+  }, [toast]);
 
-  // Calcula automaticamente o saldo de pontos
   useEffect(() => {
     setPointDifference(pointsScored - pointsConceded);
   }, [pointsScored, pointsConceded]);
 
-  // Se desmarcar playoffs, zera os resultados de playoffs
   useEffect(() => {
     if (!madePlayoffs) {
       setPlayoffsWins(0);
       setPlayoffsLosses(0);
     }
   }, [madePlayoffs]);
+
+  const resetForm = () => {
+    setSelectedLeague("");
+    setSelectedPlayer("");
+
+    setRegularWins(0);
+    setRegularLosses(0);
+    setRegularTies(0);
+
+    setMadePlayoffs(false);
+    setPlayoffsWins(0);
+    setPlayoffsLosses(0);
+
+    setPointsScored(0);
+    setPointsConceded(0);
+
+    setFinalPosition(1);
+    setSeasonYear(new Date().getFullYear());
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,31 +126,33 @@ const PlayerHistoryForm = () => {
     };
 
     try {
+      setIsSubmitting(true);
+
       console.log(
         "Dados enviados para criação do histórico:",
         historyData
       );
 
-      const response = await axios.post(
-        "http://localhost:5000/api/player-history",
+      await api.post(
+        "/player-history",
         historyData
       );
 
-      if (response.status === 201) {
-        toast({
-          title: "Histórico Cadastrado",
-          description:
-            "O histórico do jogador foi cadastrado com sucesso.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+      toast({
+        title: "Histórico cadastrado",
+        description:
+          "O histórico do jogador foi cadastrado com sucesso.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      resetForm();
     } catch (error: any) {
       console.error("Erro ao salvar histórico:", error);
 
       toast({
-        title: "Erro ao Salvar Histórico",
+        title: "Erro ao salvar histórico",
         description:
           error?.response?.data?.message ||
           error.message ||
@@ -130,13 +161,14 @@ const PlayerHistoryForm = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing={4}>
-        {/* Liga */}
         <FormControl id="league" isRequired>
           <FormLabel>Liga</FormLabel>
 
@@ -158,7 +190,6 @@ const PlayerHistoryForm = () => {
           </Select>
         </FormControl>
 
-        {/* Jogador */}
         <FormControl id="player" isRequired>
           <FormLabel>Jogador</FormLabel>
 
@@ -180,7 +211,6 @@ const PlayerHistoryForm = () => {
           </Select>
         </FormControl>
 
-        {/* Fase Regular */}
         <FormControl id="regularWins">
           <FormLabel>Vitórias - Fase Regular</FormLabel>
 
@@ -220,7 +250,6 @@ const PlayerHistoryForm = () => {
           />
         </FormControl>
 
-        {/* Classificação para Playoffs */}
         <FormControl id="madePlayoffs">
           <Checkbox
             isChecked={madePlayoffs}
@@ -241,7 +270,6 @@ const PlayerHistoryForm = () => {
           </Text>
         </FormControl>
 
-        {/* Playoffs */}
         <FormControl id="playoffsWins">
           <FormLabel>Vitórias - Playoffs</FormLabel>
 
@@ -270,7 +298,6 @@ const PlayerHistoryForm = () => {
           />
         </FormControl>
 
-        {/* Pontos */}
         <FormControl id="pointsScored">
           <FormLabel>Pontos Marcados</FormLabel>
 
@@ -306,7 +333,6 @@ const PlayerHistoryForm = () => {
           />
         </FormControl>
 
-        {/* Resultado Final */}
         <FormControl id="finalPosition" isRequired>
           <FormLabel>Posição Final</FormLabel>
 
@@ -336,6 +362,8 @@ const PlayerHistoryForm = () => {
           mt={4}
           colorScheme="blue"
           type="submit"
+          isLoading={isSubmitting}
+          loadingText="Cadastrando"
         >
           Cadastrar Histórico
         </Button>
