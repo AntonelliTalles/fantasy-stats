@@ -11,12 +11,12 @@ import {
   Tr,
   useToast,
 } from "@chakra-ui/react";
-import axios from "axios";
 
+import api from "../../../services/api";
 import EditPlayerHistoryModal from "./EditPlayerHistoryModal";
 import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
-import Pagination from '../Pagination'
-import { usePagination } from '../../../hooks/usePagination'
+import Pagination from "../Pagination";
+import { usePagination } from "../../../hooks/usePagination";
 
 const ManagePlayerHistory = () => {
   const [historyRecords, setHistoryRecords] = useState<any[]>([]);
@@ -40,24 +40,31 @@ const ManagePlayerHistory = () => {
   } = usePagination({
     items: historyRecords,
     itemsPerPage: 10,
-  })
+  });
+
+  const fetchHistoryRecords = async () => {
+    try {
+      const response = await api.get("/player-history");
+
+      setHistoryRecords(response.data);
+    } catch (error) {
+      console.error(
+        "Erro ao buscar históricos de jogadores:",
+        error
+      );
+
+      toast({
+        title: "Erro ao buscar históricos",
+        description:
+          "Não foi possível carregar os históricos dos jogadores.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   useEffect(() => {
-    const fetchHistoryRecords = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/api/player-history"
-        );
-
-        setHistoryRecords(response.data);
-      } catch (error) {
-        console.error(
-          "Erro ao buscar históricos de jogadores:",
-          error
-        );
-      }
-    };
-
     fetchHistoryRecords();
   }, []);
 
@@ -75,13 +82,7 @@ const ManagePlayerHistory = () => {
       )
     );
 
-    toast({
-      title: "Histórico Atualizado",
-      description: "O histórico foi atualizado com sucesso.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
+    setSelectedRecord(updatedRecord);
   };
 
   const handleDeleteClick = (record: any) => {
@@ -100,8 +101,8 @@ const ManagePlayerHistory = () => {
     try {
       setIsDeleting(true);
 
-      await axios.delete(
-        `http://localhost:5000/api/player-history/${recordToDelete._id}`
+      await api.delete(
+        `/player-history/${recordToDelete._id}`
       );
 
       setHistoryRecords((prevRecords) =>
@@ -127,7 +128,8 @@ const ManagePlayerHistory = () => {
 
       toast({
         title: "Erro ao deletar histórico",
-        description: "Houve um erro ao deletar o histórico.",
+        description:
+          "Houve um erro ao deletar o histórico.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -192,9 +194,7 @@ const ManagePlayerHistory = () => {
               </Td>
 
               <Td>{record.regularWins ?? 0}</Td>
-
               <Td>{record.regularLosses ?? 0}</Td>
-
               <Td>{record.regularTies ?? 0}</Td>
 
               <Td>
@@ -212,17 +212,13 @@ const ManagePlayerHistory = () => {
               </Td>
 
               <Td>{record.playoffsWins ?? 0}</Td>
-
               <Td>{record.playoffsLosses ?? 0}</Td>
 
               <Td>{record.pointsScored ?? 0}</Td>
-
               <Td>{record.pointsConceded ?? 0}</Td>
-
               <Td>{record.pointDifference ?? 0}</Td>
 
               <Td>{record.finalPosition ?? "-"}</Td>
-
               <Td>{record.seasonYear ?? "-"}</Td>
 
               <Td>
@@ -246,6 +242,7 @@ const ManagePlayerHistory = () => {
           ))}
         </Tbody>
       </Table>
+
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}

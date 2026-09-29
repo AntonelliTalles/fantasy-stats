@@ -1,4 +1,5 @@
-import { Box, Image } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
+
 import {
   FaChartBar,
   FaHome,
@@ -7,10 +8,23 @@ import {
   FaUser,
 } from 'react-icons/fa';
 
+import { useNavigate } from 'react-router-dom';
+
 import { MenuItem } from './MenuItem';
-import logo from '../../images/fs.png';
+import { useAuth } from '../Auth/AuthContext';
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+
+    navigate('/login', {
+      replace: true,
+    });
+  };
+
   return (
     <Box
       w="250px"
@@ -25,15 +39,7 @@ const Sidebar = () => {
         display="flex"
         justifyContent="center"
         alignItems="center"
-      >
-        {/* <Image
-          src={logo}
-          alt="Fantasy Stats"
-          w="190px"
-          maxH="60px"
-          objectFit="contain"
-        /> */}
-      </Box>
+      />
 
       <MenuItem
         title="Home"
@@ -76,20 +82,28 @@ const Sidebar = () => {
         icon={<FaChartBar />}
         subItems={[
           {
-            label: 'Cadastrar Confrontos Diretos',
-            link: '/admin/HeadToHead/add-h2h',
+            label:
+              'Cadastrar Confrontos Diretos',
+            link:
+              '/admin/HeadToHead/add-h2h',
           },
           {
-            label: 'Gerenciar Confrontos Diretos',
-            link: '/admin/HeadToHead/manage-h2h',
+            label:
+              'Gerenciar Confrontos Diretos',
+            link:
+              '/admin/HeadToHead/manage-h2h',
           },
           {
-            label: 'Adicionar Histórico de temporada',
-            link: '/admin/PlayerHistory/player-history',
+            label:
+              'Adicionar Histórico de temporada',
+            link:
+              '/admin/PlayerHistory/player-history',
           },
           {
-            label: 'Gerenciar Histórico de temporada',
-            link: '/admin/PlayerHistory/manage-player-history',
+            label:
+              'Gerenciar Histórico de temporada',
+            link:
+              '/admin/PlayerHistory/manage-player-history',
           },
         ]}
       />
@@ -97,7 +111,7 @@ const Sidebar = () => {
       <MenuItem
         title="Sair"
         icon={<FaSignOutAlt />}
-        link="/login"
+        onClick={handleLogout}
       />
     </Box>
   );

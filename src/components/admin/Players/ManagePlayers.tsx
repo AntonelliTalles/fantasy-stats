@@ -10,8 +10,8 @@ import {
   ButtonGroup,
   useToast,
 } from "@chakra-ui/react";
-import axios from "axios";
 
+import api from "../../../services/api";
 import EditPlayerModal from "./EditPlayerModal";
 import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
 import Pagination from "../Pagination";
@@ -43,13 +43,19 @@ const ManagePlayers = () => {
 
   const fetchPlayers = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/players"
-      );
+      const response = await api.get("/players");
 
       setPlayers(response.data);
     } catch (error) {
       console.error("Erro ao buscar jogadores", error);
+
+      toast({
+        title: "Erro ao buscar jogadores",
+        description: "Não foi possível carregar a lista de jogadores.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -65,11 +71,11 @@ const ManagePlayers = () => {
   const handleSave = (updatedPlayer: any) => {
     setPlayers((currentPlayers) =>
       currentPlayers.map((player) =>
-        player._id === updatedPlayer._id
-          ? updatedPlayer
-          : player
+        player._id === updatedPlayer._id ? updatedPlayer : player
       )
     );
+
+    setSelectedPlayer(updatedPlayer);
   };
 
   const handleDeleteClick = (player: any) => {
@@ -88,9 +94,7 @@ const ManagePlayers = () => {
     try {
       setIsDeleting(true);
 
-      await axios.delete(
-        `http://localhost:5000/api/players/${playerToDelete._id}`
-      );
+      await api.delete(`/players/${playerToDelete._id}`);
 
       setPlayers((currentPlayers) =>
         currentPlayers.filter(
@@ -140,17 +144,11 @@ const ManagePlayers = () => {
             <Tr key={player._id}>
               <Td>{player.name}</Td>
 
-              <Td>
-                {player.favoriteTeams?.join(", ") || "-"}
-              </Td>
+              <Td>{player.favoriteTeams?.join(", ") || "-"}</Td>
 
-              <Td>
-                {player.leagueTypes?.join(", ") || "-"}
-              </Td>
+              <Td>{player.leagueTypes?.join(", ") || "-"}</Td>
 
-              <Td>
-                {player.titlesWon?.join(", ") || "-"}
-              </Td>
+              <Td>{player.titlesWon?.join(", ") || "-"}</Td>
 
               <Td>
                 <ButtonGroup spacing={4}>
